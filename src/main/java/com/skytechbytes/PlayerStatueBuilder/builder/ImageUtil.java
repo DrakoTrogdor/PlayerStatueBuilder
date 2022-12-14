@@ -25,7 +25,7 @@ public class ImageUtil {
 	}
 	/**
 	 * Thanks Stackoverflow
-	 * @param bi
+	 * @param source
 	 * @return
 	 */
 	public static BufferedImage deepCopy(BufferedImage source) {

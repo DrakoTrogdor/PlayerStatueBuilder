@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
@@ -107,11 +108,21 @@ public class Util {
 		 */
 		try {
 			
-			String json = APIWrapper.readJsonFromUrl("https://playerdb.co/api/player/minecraft/" + name);					
-			
-			String uuid = json.substring(json.indexOf("raw_id\":")+9, json.indexOf("raw_id\":")+9+32);
-			
-			
+			//String json = APIWrapper.readJsonFromUrl("https://playerdb.co/api/player/minecraft/" + name);
+			//String uuid = json.substring(json.indexOf("raw_id\":")+9, json.indexOf("raw_id\":")+9+32);
+
+			// Get the UUID directly from the horses mouth (playerdb was ratelimited)
+			String json = APIWrapper.readJsonFromUrl("https://api.mojang.com/users/profiles/minecraft/" + name);
+			Pattern pattern = Pattern.compile("\"id\"\\s*:\\s*\"([a-f0-9]{32})\"", Pattern.CASE_INSENSITIVE);
+			Matcher matcher = pattern.matcher(json);
+			String uuid ="";
+			if (matcher.find()) {
+				uuid = matcher.group(1);
+			}
+			else {
+				throw new Exception("Could not find uuid returned JSON from mojang.com");
+			}
+
 			Log.log(uuid);
 			URL URL  = new URL("https://crafatar.com/skins/" + uuid);
 			bi = ImageIO.read(URL);
